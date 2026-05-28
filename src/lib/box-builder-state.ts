@@ -89,10 +89,10 @@ export function normalizeBuilderDraft(stored: unknown): BuilderDraft {
   const data = stored as Partial<BuilderDraft>;
   const shape = isBoxShape(data.boxShape) ? data.boxShape : base.boxShape;
 
-  let chocolatesByShape = data.chocolatesByShape
+  const chocolatesByShape = data.chocolatesByShape
     ? { ...emptyChocolatesByShape(), ...data.chocolatesByShape }
     : emptyChocolatesByShape();
-  let messagesByShape = data.messagesByShape
+  const messagesByShape = data.messagesByShape
     ? { ...emptyMessagesByShape(), ...data.messagesByShape }
     : emptyMessagesByShape();
 
@@ -177,9 +177,12 @@ export function withMessagesForShape(
 /** Saved box for sharing — current shape only, no per-shape maps */
 export function toSavedBoxDraft(draft: BuilderDraft): BoxDraft {
   const messages = pruneMessagesForChocolates(draft.messages, draft.chocolates);
-  const { chocolatesByShape: _c, messagesByShape: _m, boxShapeChosen: _b, ...rest } = draft;
   return {
-    ...rest,
+    id: draft.id,
+    boxShape: draft.boxShape,
+    boxColor: draft.boxColor,
+    cardText: draft.cardText,
+    createdAt: draft.createdAt,
     chocolates: [...draft.chocolates],
     messages,
   };

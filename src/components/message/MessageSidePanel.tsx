@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ChocolatePiece } from "@/components/chocolate/ChocolatePiece";
 import { flowButtonSmClass } from "@/components/ui/buttonStyles";
 import { CHOCOLATE_SHAPES } from "@/lib/data";
@@ -33,15 +33,11 @@ export function MessageSidePanel({
   const [imageUrl, setImageUrl] = useState(initial?.imageUrl ?? "");
   const [activeAttachment, setActiveAttachment] = useState<AttachmentKind | null>(null);
 
-  useEffect(() => {
-    setMapUrl(initial?.mapUrl ?? "");
-    setSpotifyUrl(initial?.spotifyUrl ?? "");
-    setImageUrl(initial?.imageUrl ?? "");
+  useLayoutEffect(() => {
     if (editorRef.current) {
       editorRef.current.innerHTML = initial?.html ?? "";
     }
-    setActiveAttachment(null);
-  }, [initial?.html, initial?.imageUrl, initial?.mapUrl, initial?.spotifyUrl, slotIndex]);
+  }, [initial?.html]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -102,29 +98,36 @@ export function MessageSidePanel({
   const chocolateOverline = `${selectedShapeLabel} ${chocolate.type} chocolate`;
 
   return (
-    <div className="h-full overflow-y-auto p-2 sm:p-4">
-      <div className="relative mx-auto mt-[60px] w-full max-w-[560px] pt-10">
-      <div className="pointer-events-none absolute -top-1 right-2 z-30 sm:right-4">
+    <div className="h-full overflow-y-auto p-1 pb-4 sm:p-4">
+      <div className="relative mx-auto mt-8 w-full max-w-[560px] pt-8 sm:mt-[60px] sm:pt-10">
+      <div className="pointer-events-none absolute -top-1 right-1 z-30 sm:right-4">
+        <ChocolatePiece
+          type={chocolate.type}
+          shapeId={chocolate.shapeId}
+          size="slot"
+          pixelSize={92}
+          className="message-panel-chocolate sm:hidden"
+        />
         <ChocolatePiece
           type={chocolate.type}
           shapeId={chocolate.shapeId}
           size="slot"
           pixelSize={118}
-          className="message-panel-chocolate"
+          className="message-panel-chocolate hidden sm:block"
         />
       </div>
 
-      <div className="origin-top-left rotate-[-1deg] border-2 border-black bg-white/65 px-4 py-3 sm:px-6 sm:py-4">
+      <div className="origin-top-left rotate-[-1deg] border-2 border-black bg-white/65 px-3 py-3 sm:px-6 sm:py-4">
         <p className="my-[6px] font-serif text-[13px] tracking-[0.04em] text-ink">
           {chocolateOverline}
         </p>
-        <div className="mt-2 flex min-h-[188px] items-center sm:min-h-[220px]">
+        <div className="mt-2 flex min-h-[140px] items-center sm:min-h-[220px]">
           <div
             ref={editorRef}
             contentEditable
             suppressContentEditableWarning
             data-placeholder="Write a note..."
-            className="rich-editor w-full min-h-[128px] p-1 font-script text-[28px] leading-[1.15] text-ink/85 sm:min-h-[150px]"
+            className="rich-editor w-full min-h-[100px] p-1 font-script text-[22px] leading-[1.15] text-ink/85 sm:min-h-[150px] sm:text-[28px]"
           />
         </div>
 
@@ -182,8 +185,8 @@ export function MessageSidePanel({
           </div>
         )}
 
-        <div className="mt-6 flex items-end justify-between gap-4">
-          <div className="flex items-center gap-2">
+        <div className="mt-5 flex flex-col gap-4 sm:mt-6 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex flex-wrap items-center gap-2">
             {[
               { cmd: "bold", label: "B" },
               { cmd: "italic", label: "I" },
@@ -193,7 +196,7 @@ export function MessageSidePanel({
                 key={cmd}
                 type="button"
                 onClick={() => exec(cmd)}
-                className="flex h-9 w-9 items-center justify-center border border-ink/25 bg-transparent font-mono text-[10px] tracking-[0.18em] text-ink/80 transition-colors hover:border-ink/40 hover:text-ink"
+                className="flex h-11 w-11 touch-manipulation items-center justify-center border border-ink/25 bg-transparent font-mono text-[10px] tracking-[0.18em] text-ink/80 transition-colors hover:border-ink/40 hover:text-ink sm:h-9 sm:w-9"
               >
                 {label}
               </button>
@@ -224,14 +227,14 @@ export function MessageSidePanel({
             <button
               type="button"
               onClick={onClear}
-              className={`flex h-9 min-w-[90px] items-center justify-center border border-ink/25 px-4 leading-none text-muted transition-colors hover:border-ink/40 hover:text-ink ${flowButtonSmClass}`}
+              className={`flex h-11 min-w-[5.5rem] touch-manipulation items-center justify-center border border-ink/25 px-4 leading-none text-muted transition-colors hover:border-ink/40 hover:text-ink sm:h-9 sm:min-w-[90px] ${flowButtonSmClass}`}
             >
               Clear
             </button>
             <button
               type="button"
               onClick={handleSave}
-              className={`flex h-9 min-w-[120px] items-center justify-center bg-ink px-6 leading-none text-cream transition-colors hover:bg-ink/88 ${flowButtonSmClass}`}
+              className={`flex h-11 min-w-[7rem] flex-1 touch-manipulation items-center justify-center bg-ink px-6 leading-none text-cream transition-colors hover:bg-ink/88 sm:h-9 sm:min-w-[120px] sm:flex-none ${flowButtonSmClass}`}
             >
               Save
             </button>
@@ -240,12 +243,12 @@ export function MessageSidePanel({
 
       </div>
 
-      <div className="mt-3 flex items-center justify-center gap-2">
+      <div className="mt-3 flex items-center justify-center gap-3">
         <button
           type="button"
           onClick={onPrev}
           aria-label="Previous chocolate"
-          className="flex h-8 w-8 items-center justify-center font-mono text-base text-ink/70 transition-colors hover:text-ink"
+          className="flex h-11 w-11 touch-manipulation items-center justify-center font-mono text-lg text-ink/70 transition-colors hover:text-ink sm:h-8 sm:w-8 sm:text-base"
         >
           ←
         </button>
@@ -253,7 +256,7 @@ export function MessageSidePanel({
           type="button"
           onClick={onNext}
           aria-label="Next chocolate"
-          className="flex h-8 w-8 items-center justify-center font-mono text-base text-ink/70 transition-colors hover:text-ink"
+          className="flex h-11 w-11 touch-manipulation items-center justify-center font-mono text-lg text-ink/70 transition-colors hover:text-ink sm:h-8 sm:w-8 sm:text-base"
         >
           →
         </button>
@@ -282,7 +285,7 @@ function AttachmentIconButton({
       onClick={onClick}
       aria-label={label}
       title={label}
-      className={`flex h-9 w-9 items-center justify-center border transition-colors ${
+      className={`flex h-11 w-11 touch-manipulation items-center justify-center border transition-colors sm:h-9 sm:w-9 ${
         active || filled
           ? "border-ink/40 bg-ink/5 text-ink"
           : "border-ink/15 text-muted hover:border-ink/30 hover:text-ink"

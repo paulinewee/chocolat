@@ -4,7 +4,11 @@ import type { ReactNode } from "react";
 import { AssetImage } from "@/components/ui/AssetImage";
 import type { BoxShape } from "@/types";
 import type { LidVariant } from "@/lib/assets";
-import { getBoxSlots, slotContainerPosition } from "@/lib/box-slot-layouts";
+import {
+  getBoxSlots,
+  getSlotDropRenderOrder,
+  slotContainerPosition,
+} from "@/lib/box-slot-layouts";
 import { BOX_IMAGE_SIZES, getBoxImageSrc } from "@/lib/assets";
 
 export type BoxSize = "picker" | "md" | "lg" | "xl" | "fit";
@@ -13,7 +17,7 @@ const SIZE_CLASS: Record<BoxSize, string> = {
   picker: "w-48 aspect-square sm:w-52",
   md: "w-full max-w-[520px] aspect-square",
   lg: "w-full max-w-[600px] aspect-square",
-  xl: "w-full min-w-[300px] max-w-[min(100%,min(52vw,680px))] aspect-square",
+  xl: "aspect-square w-full min-w-0 max-w-[min(100%,min(92vw,680px))]",
   fit: "aspect-square h-full max-h-full w-auto max-w-full min-h-0 min-w-0",
 };
 
@@ -56,8 +60,9 @@ export function slotHitSizePx(shape: BoxShape, slotIndex: number, size: BoxSize)
   if (!base) return 0;
   const slot = getBoxSlots(shape)[slotIndex];
   if (!slot) return base;
+  if (shape === "flower" && slotIndex === 0) return Math.round(base * 1.15);
   const isUpperCorner = slot.x >= 62 && slot.y <= 42;
-  const isLowerTip = slot.y >= 62;
+  const isLowerTip = shape !== "flower" && slot.y >= 62;
   if (isUpperCorner || isLowerTip) return Math.round(base * 1.3);
   return base;
 }
@@ -221,6 +226,7 @@ export function BoxSlotDropLayer({
   spotCount,
   onDragOver,
   onDrop,
+  onEmptySlotTap,
   /** Filled slots use pointer-events-none so clicks reach chocolates below (z-[2]). */
   isFilled,
 }: {
@@ -229,22 +235,24 @@ export function BoxSlotDropLayer({
   spotCount?: number;
   onDragOver: (e: React.DragEvent) => void;
   onDrop: (e: React.DragEvent, slotIndex: number) => void;
+  onEmptySlotTap?: (slotIndex: number) => void;
   isFilled?: (slotIndex: number) => boolean;
 }) {
   const slots = getBoxSlots(shape);
   const count = spotCount ?? slots.length;
   const nudgeY = SLOT_NUDGE_Y_PX[size];
+  const renderOrder = getSlotDropRenderOrder(shape, count);
 
   return (
     <div className="relative h-full w-full">
-      {Array.from({ length: count }, (_, index) => {
+      {renderOrder.map((index) => {
         const { left, top } = slotContainerPosition(shape, index);
         const hit = slotHitSizePx(shape, index, size);
         const filled = isFilled?.(index) ?? false;
         return (
           <div
             key={index}
-            className={`absolute touch-none ${filled ? "pointer-events-none" : "pointer-events-auto"}`}
+            className={`absolute ${filled ? "pointer-events-none touch-none" : "pointer-events-auto touch-manipulation"}`}
             style={{
               left,
               top,
@@ -254,6 +262,11 @@ export function BoxSlotDropLayer({
             }}
             onDragOver={onDragOver}
             onDrop={(e) => onDrop(e, index)}
+            onClick={
+              !filled && onEmptySlotTap
+                ? () => onEmptySlotTap(index)
+                : undefined
+            }
             aria-label={`Drop chocolate in slot ${index + 1}`}
           />
         );

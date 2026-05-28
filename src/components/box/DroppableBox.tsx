@@ -3,6 +3,7 @@
 import { useCallback } from "react";
 import type { BoxShape, PlacedChocolate } from "@/types";
 import { getChocolateDragData } from "@/lib/chocolate-drag";
+import type { PendingChocolate } from "@/components/chocolate/ChocolatePicker";
 import { ChocolatePiece } from "@/components/chocolate/ChocolatePiece";
 import {
   BOX_CHOCOLATE_PX,
@@ -21,6 +22,8 @@ interface DroppableBoxProps {
   spotCount: number;
   size?: BoxSize;
   className?: string;
+  pending?: PendingChocolate | null;
+  onPendingPlaced?: () => void;
 }
 
 export function DroppableBox({
@@ -31,6 +34,8 @@ export function DroppableBox({
   spotCount,
   size = "xl",
   className = "",
+  pending,
+  onPendingPlaced,
 }: DroppableBoxProps) {
   const isFilled = useCallback(
     (slotIndex: number) => chocolates.some((c) => c.slotIndex === slotIndex),
@@ -62,6 +67,12 @@ export function DroppableBox({
     placeChocolate(payload, slotIndex);
   };
 
+  const handleEmptySlotTap = (slotIndex: number) => {
+    if (!pending || isFilled(slotIndex)) return;
+    placeChocolate(pending, slotIndex);
+    onPendingPlaced?.();
+  };
+
   const removeFromSlot = (slotIndex: number) => {
     onChange(chocolates.filter((c) => c.slotIndex !== slotIndex));
   };
@@ -85,6 +96,7 @@ export function DroppableBox({
             isFilled={isFilled}
             onDragOver={handleDragOver}
             onDrop={handleSlotDrop}
+            onEmptySlotTap={pending ? handleEmptySlotTap : undefined}
           />
         }
       >
@@ -101,7 +113,7 @@ export function DroppableBox({
                 onClick={() => removeFromSlot(index)}
                 onDragOver={handleDragOver}
                 onDrop={(e) => handleSlotDrop(e, index)}
-                className="relative z-10 flex cursor-pointer items-center justify-center"
+                className="relative z-10 flex min-h-11 min-w-11 touch-manipulation cursor-pointer items-center justify-center"
                 style={{ width: hit, height: hit }}
                 aria-label="Remove chocolate"
               >
@@ -118,8 +130,11 @@ export function DroppableBox({
       </BoxVisual>
       </div>
 
-      <p className="mt-2 shrink-0 px-2 pb-1 text-center font-mono text-[10px] leading-relaxed tracking-[0.18em] text-muted sm:text-xs sm:tracking-[0.2em]">
-        CLICK CHOCOLATE TO REMOVE OR DRAG IN A NEW CHOCOLATE TO REPLACE
+      <p className="mt-2 shrink-0 px-2 pb-1 text-center font-mono text-[9px] leading-relaxed tracking-[0.14em] text-muted sm:text-[10px] sm:tracking-[0.18em] md:text-xs md:tracking-[0.2em]">
+        <span className="sm:hidden">TAP A CHOCOLATE, THEN TAP A SLOT · TAP IN BOX TO REMOVE</span>
+        <span className="hidden sm:inline">
+          CLICK CHOCOLATE TO REMOVE OR DRAG IN A NEW CHOCOLATE TO REPLACE
+        </span>
       </p>
     </div>
   );

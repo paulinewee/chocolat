@@ -40,22 +40,30 @@ export function ShareMessageModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/35 p-4 sm:p-6"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-ink/35 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:items-center sm:p-6"
       onClick={onClose}
       role="dialog"
       aria-modal
       aria-labelledby="share-message-title"
     >
       <div
-        className="message-reveal relative w-full max-w-[min(100%,400px)] pt-10"
+        className="message-reveal relative flex max-h-[min(92dvh,720px)] w-full max-w-[min(100%,400px)] flex-col pt-8 sm:max-h-[min(90dvh,720px)] sm:pt-10"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="pointer-events-none absolute -top-1 right-2 z-30 sm:right-4">
+        <div className="pointer-events-none absolute -top-1 right-1 z-30 sm:right-4">
+          <ChocolatePiece
+            type={chocolate.type}
+            shapeId={chocolate.shapeId}
+            size="slot"
+            pixelSize={92}
+            className="sm:hidden"
+          />
           <ChocolatePiece
             type={chocolate.type}
             shapeId={chocolate.shapeId}
             size="slot"
             pixelSize={118}
+            className="hidden sm:block"
           />
         </div>
 
@@ -69,7 +77,7 @@ export function ShareMessageModal({
               onClose();
             }
           }}
-          className="origin-top-left w-full rotate-[-1deg] cursor-pointer border-2 border-black bg-cream px-4 py-3 text-left sm:px-6 sm:py-4"
+          className="origin-top-left w-full rotate-[-1deg] cursor-pointer overflow-y-auto overscroll-contain border-2 border-black bg-cream px-4 py-3 text-left sm:px-6 sm:py-4"
         >
           <p
             id="share-message-title"
@@ -81,7 +89,7 @@ export function ShareMessageModal({
           <div className="mt-2 flex min-h-[120px] items-center sm:min-h-[140px]">
             {message.html?.trim() ? (
               <div
-                className="rich-editor w-full p-1 font-script text-[26px] leading-[1.15] text-ink/85 sm:text-[28px]"
+                className="rich-editor w-full p-1 font-script text-[22px] leading-[1.15] text-ink/85 sm:text-[28px]"
                 dangerouslySetInnerHTML={{ __html: message.html }}
               />
             ) : (

@@ -58,6 +58,13 @@ export function getBoxImageSrc(
   return `/boxes/${folder}/${name}-${variant}.svg`;
 }
 
+/** Closed ribbon box with card slot (`*-ribbon-1.svg`; blue/yellow asset sets only). */
+export function getBoxRibbon1Src(shape: BoxShape, colorHex?: string): string {
+  const folder = getBoxColorFolder(colorHex);
+  const name = getBoxAssetName(shape);
+  return `/boxes/${folder}/${name}-ribbon-1.svg`;
+}
+
 export type LidVariant = "top" | "ribbon";
 
 /** Resolves to `pink-svg`, `blue-svg`, or `yellow-svg` under /public/boxes */

@@ -14,7 +14,7 @@ export default function SharedBoxPage() {
 
   if (!idValid) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center bg-cream px-6 text-center">
+      <main className="safe-pad-x flex min-h-screen flex-col items-center justify-center bg-cream px-4 text-center sm:px-6">
         <p className="font-script text-2xl italic">Invalid link</p>
         <p className="mt-2 font-serif text-sm text-muted">
           This URL does not look like a valid box link.
@@ -36,7 +36,7 @@ export default function SharedBoxPage() {
 
   if (!box) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center bg-cream px-6 text-center">
+      <main className="safe-pad-x flex min-h-screen flex-col items-center justify-center bg-cream px-4 text-center sm:px-6">
         <p className="font-script text-2xl italic">This box could not be found</p>
         <p className="mt-2 max-w-sm font-serif text-sm text-muted">
           {error

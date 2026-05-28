@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { BoxPreview } from "@/components/box/BoxPreview";
 import { AssetImage } from "@/components/ui/AssetImage";
 import { NextButton } from "@/components/ui/NextButton";
@@ -13,25 +13,17 @@ import { getBoxShareUrl } from "@/lib/site-url";
 export default function WriteCardPage() {
   const { draft, pickComplete, setCardText, finalizeAndSave } = useBoxBuilder();
   const ready = useRequireCardReady();
-  const [cardText, setLocalCard] = useState(draft.cardText);
   const [saveError, setSaveError] = useState(false);
   const [saving, setSaving] = useState(false);
   const ribbon1Src = `/boxes/${getBoxColorFolder(draft.boxColor)}/${getBoxAssetName(draft.boxShape)}-ribbon-1.svg`;
   const ribbonFallbackSrc = `/boxes/${getBoxColorFolder(draft.boxColor)}/${getBoxAssetName(draft.boxShape)}-ribbon.svg`;
-  const [cardBgSrc, setCardBgSrc] = useState(ribbon1Src);
-
-  useEffect(() => {
-    setLocalCard(draft.cardText);
-  }, [draft.cardText]);
-
-  useEffect(() => {
-    setCardBgSrc(ribbon1Src);
-  }, [ribbon1Src]);
+  const [failedRibbonSrc, setFailedRibbonSrc] = useState<string | null>(null);
+  const cardBgSrc =
+    failedRibbonSrc === ribbon1Src ? ribbonFallbackSrc : ribbon1Src;
 
   const handleNext = async () => {
     setSaveError(false);
     setSaving(true);
-    setCardText(cardText);
     const id = await finalizeAndSave();
     setSaving(false);
     if (!id) {
@@ -49,7 +41,7 @@ export default function WriteCardPage() {
     );
   }
 
-  const canFinish = cardText.trim().length > 0 && pickComplete;
+  const canFinish = draft.cardText.trim().length > 0 && pickComplete;
 
   return (
     <PageShell
@@ -63,7 +55,7 @@ export default function WriteCardPage() {
         />
       }
     >
-      <div className="flex flex-1 flex-col items-center gap-10">
+      <div className="flex flex-1 flex-col items-center gap-6 sm:gap-10">
         <div className="relative">
           <BoxPreview
             shape={draft.boxShape}
@@ -78,18 +70,19 @@ export default function WriteCardPage() {
 
         <div className="relative w-full max-w-xl">
           <AssetImage
+            key={ribbon1Src}
             src={cardBgSrc}
             alt=""
             width={900}
             height={540}
             className="h-auto w-full object-contain"
-            onError={() => setCardBgSrc(ribbonFallbackSrc)}
+            onError={() => setFailedRibbonSrc(ribbon1Src)}
           />
           <div className="absolute inset-x-0 bottom-[5%] flex justify-center px-[9%] sm:bottom-[6%] sm:px-[11%]">
             <div className="w-full max-w-[280px] border-2 border-black bg-cream px-4 py-4 sm:max-w-[300px]">
               <textarea
-                value={cardText}
-                onChange={(e) => setLocalCard(e.target.value)}
+                value={draft.cardText}
+                onChange={(e) => setCardText(e.target.value)}
                 placeholder="Dear you, ..."
                 rows={7}
                 className="min-h-[150px] w-full resize-none bg-transparent p-1 text-center font-script text-lg leading-relaxed text-ink placeholder:text-ink/45 focus:outline-none sm:min-h-[170px] sm:text-xl"

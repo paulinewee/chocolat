@@ -8,6 +8,7 @@ import { NextButton } from "@/components/ui/NextButton";
 import { SiteHeader } from "@/components/ui/SiteHeader";
 import { useBoxBuilder } from "@/context/BoxBuilderContext";
 import { useRequirePickComplete } from "@/hooks/useCreateFlowGuard";
+import { useResponsiveBoxSize } from "@/hooks/useResponsiveBoxSize";
 import {
   allChocolatesHaveMessages,
   messageHasContent,
@@ -50,7 +51,8 @@ function getNextUnmessagedSlot(
 export default function AddMessagePage() {
   const router = useRouter();
   const { draft, spotCount, setMessages } = useBoxBuilder();
-  const pickComplete = useRequirePickComplete("message");
+  const pickComplete = useRequirePickComplete();
+  const boxSize = useResponsiveBoxSize("fit");
   const [editingSlot, setEditingSlot] = useState<number | null>(null);
   const [animatingOutSlot, setAnimatingOutSlot] = useState<number | null>(null);
   const [animatingInSlot, setAnimatingInSlot] = useState<number | null>(null);
@@ -139,9 +141,14 @@ export default function AddMessagePage() {
 
   return (
     <main className="flex h-dvh max-h-dvh flex-col overflow-hidden bg-cream">
-      <div className="mx-auto flex h-full min-h-0 w-full max-w-[1400px] flex-1 flex-col overflow-hidden px-4 py-4 md:px-8 md:py-6">
+      <div className="safe-pad-x mx-auto flex h-full min-h-0 w-full max-w-[1400px] flex-1 flex-col overflow-hidden px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] md:px-8 md:py-6">
         <SiteHeader
-          title="click a chocolate to add a message"
+          title={
+            <>
+              <span className="sm:hidden">add a message</span>
+              <span className="hidden sm:inline">click a chocolate to add a message</span>
+            </>
+          }
           backHref="/create/pick"
           navEnd={
             <NextButton
@@ -151,10 +158,10 @@ export default function AddMessagePage() {
           }
         />
 
-        <div className="mt-4 grid min-h-0 flex-1 grid-cols-1 gap-4 overflow-visible lg:grid-cols-2 lg:gap-8">
+        <div className="mt-2 grid min-h-0 flex-1 grid-cols-1 grid-rows-[minmax(0,0.9fr)_minmax(0,1.1fr)] gap-3 overflow-hidden sm:mt-4 sm:grid-rows-[minmax(0,1fr)_minmax(0,1fr)] lg:grid-cols-2 lg:grid-rows-1 lg:gap-8">
           {hasChocolates ? (
             <>
-              <div className="relative z-20 flex min-h-0 items-center justify-center overflow-visible">
+              <div className="relative z-20 flex min-h-0 items-center justify-center overflow-hidden">
                 <MessageBox
                   className="h-full"
                   shape={draft.boxShape}
@@ -166,12 +173,12 @@ export default function AddMessagePage() {
                   activeSlot={editingSlot}
                   animatingOutSlot={animatingOutSlot}
                   animatingInSlot={animatingInSlot}
-                  size="fit"
+                  size={boxSize}
                 />
               </div>
-              <div className="relative z-10 min-h-0 overflow-hidden px-3 sm:px-6 lg:px-10">
+              <div className="relative z-10 min-h-0 overflow-x-hidden overflow-y-auto overscroll-contain px-1 sm:px-6 lg:px-10">
                 {allCompleteNotice ? (
-                  <div className="flex h-full items-center justify-center p-6 text-center">
+                  <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-6">
                     <p className="max-w-sm font-serif text-[13px] leading-relaxed tracking-[0.04em] text-muted sm:text-sm">
                       All chocolates now have messages. Click to edit any messages or press
                       Next to continue.
@@ -179,6 +186,7 @@ export default function AddMessagePage() {
                   </div>
                 ) : editingSlot !== null && selectedChocolate ? (
                   <MessageSidePanel
+                    key={editingSlot}
                     slotIndex={editingSlot}
                     chocolate={selectedChocolate}
                     initial={currentMessage}
@@ -188,9 +196,9 @@ export default function AddMessagePage() {
                     onNext={() => handleStepSlot("next")}
                   />
                 ) : (
-                  <div className="flex h-full items-center justify-center p-6 text-center">
+                  <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-6">
                     <p className="font-serif text-[13px] tracking-[0.04em] text-muted sm:text-sm">
-                      No chocolate selected. Select a chocolate to add a secret message to it
+                      Tap a chocolate in the box to add its secret message
                     </p>
                   </div>
                 )}

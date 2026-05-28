@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { BoxDraft } from "@/types";
 import { BOX_SPOT_COUNTS } from "@/types";
 import { messageHasContent } from "@/lib/message-utils";
@@ -9,6 +9,7 @@ import { ChocolatePiece } from "@/components/chocolate/ChocolatePiece";
 import { ShareBoxCardOverlay } from "@/components/share/ShareBoxCardOverlay";
 import { ShareConfetti } from "@/components/share/ShareConfetti";
 import { ShareMessageModal } from "@/components/share/ShareMessageModal";
+import { useResponsiveBoxSize } from "@/hooks/useResponsiveBoxSize";
 
 interface ShareExperienceProps {
   box: BoxDraft;
@@ -46,16 +47,45 @@ export function ShareExperience({ box }: ShareExperienceProps) {
   const [showConfetti, setShowConfetti] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const celebratedRef = useRef(false);
+  const celebrationTimersRef = useRef<number[]>([]);
 
   const spotCount = BOX_SPOT_COUNTS[box.boxShape];
   const hasChocolates = box.chocolates.length > 0;
   const hasCard = box.cardText.trim().length > 0;
   const chocolatesRevealed = phase === "chocolates";
   const showCardOnBox = (phase === "card" || isComplete) && hasCard;
-  const chocPx = BOX_CHOCOLATE_PX.xl;
+  const boxSize = useResponsiveBoxSize("xl");
+  const chocPx = BOX_CHOCOLATE_PX[boxSize];
 
   const getMessage = (slotIndex: number) =>
     box.messages.find((m) => m.slotIndex === slotIndex);
+
+  const startCelebration = useCallback(() => {
+    if (celebratedRef.current) return;
+    celebratedRef.current = true;
+    setShowConfetti(true);
+
+    celebrationTimersRef.current.push(
+      window.setTimeout(() => {
+        setShowConfetti(false);
+        setLidLifted(false);
+        setLidSettling(true);
+        setPhase(hasCard ? "card" : "closed");
+        setIsComplete(true);
+        setActiveSlot(null);
+      }, CONFETTI_MS),
+      window.setTimeout(() => {
+        setLidSettling(false);
+      }, CONFETTI_MS + LID_SETTLE_MS),
+    );
+  }, [hasCard]);
+
+  useEffect(() => {
+    return () => {
+      celebrationTimersRef.current.forEach((id) => window.clearTimeout(id));
+      celebrationTimersRef.current = [];
+    };
+  }, []);
 
   const handleChocolateClick = (slotIndex: number) => {
     if (!chocolatesRevealed || isComplete) return;
@@ -64,7 +94,13 @@ export function ShareExperience({ box }: ShareExperienceProps) {
     if (current >= BITES_TO_FINISH) return;
 
     const next = current + 1;
-    setBiteCounts((prev) => ({ ...prev, [slotIndex]: next }));
+    setBiteCounts((prev) => {
+      const updated = { ...prev, [slotIndex]: next };
+      if (allChocolatesEaten(box.chocolates, updated)) {
+        queueMicrotask(startCelebration);
+      }
+      return updated;
+    });
 
     if (next >= BITES_TO_FINISH && messageHasContent(getMessage(slotIndex))) {
       setActiveSlot(slotIndex);
@@ -93,38 +129,6 @@ export function ShareExperience({ box }: ShareExperienceProps) {
     }
   };
 
-  useEffect(() => {
-    if (!chocolatesRevealed || celebratedRef.current || isComplete) return;
-    if (!allChocolatesEaten(box.chocolates, biteCounts)) return;
-
-    celebratedRef.current = true;
-    setShowConfetti(true);
-
-    const confettiTimer = window.setTimeout(() => {
-      setShowConfetti(false);
-      setLidLifted(false);
-      setLidSettling(true);
-      setPhase(hasCard ? "card" : "closed");
-      setIsComplete(true);
-      setActiveSlot(null);
-    }, CONFETTI_MS);
-
-    const settleTimer = window.setTimeout(() => {
-      setLidSettling(false);
-    }, CONFETTI_MS + LID_SETTLE_MS);
-
-    return () => {
-      window.clearTimeout(confettiTimer);
-      window.clearTimeout(settleTimer);
-    };
-  }, [
-    biteCounts,
-    box.chocolates,
-    chocolatesRevealed,
-    hasCard,
-    isComplete,
-  ]);
-
   const activeMessage = activeSlot !== null ? getMessage(activeSlot) : null;
   const activeChocolate =
     activeSlot !== null
@@ -133,8 +137,8 @@ export function ShareExperience({ box }: ShareExperienceProps) {
 
   if (!hasChocolates) {
     return (
-      <div className="mx-auto flex w-full max-w-3xl flex-col items-center px-6 py-12 text-center">
-        <h1 className="font-script text-3xl italic md:text-4xl">
+      <div className="safe-pad-x mx-auto flex w-full max-w-3xl flex-col items-center px-4 py-8 text-center sm:px-6 sm:py-12">
+        <h1 className="font-script text-[1.75rem] italic sm:text-3xl md:text-4xl">
           I made this box of chocolates for you
         </h1>
         <p className="mt-8 font-serif text-sm text-muted">
@@ -145,15 +149,15 @@ export function ShareExperience({ box }: ShareExperienceProps) {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col items-center px-6 py-12">
+    <div className="safe-pad-x mx-auto flex w-full max-w-3xl flex-col items-center px-4 py-8 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:px-6 sm:py-12">
       <ShareConfetti active={showConfetti} />
 
-      <h1 className="text-center font-script text-3xl italic md:text-4xl">
+      <h1 className="text-center font-script text-[1.75rem] leading-tight italic sm:text-3xl md:text-4xl">
         I made this box of chocolates for you
       </h1>
 
       <p
-        className={`mt-3 mb-3 w-full max-w-3xl px-2 text-center font-serif text-sm tracking-[0.04em] text-muted transition-opacity duration-300 md:max-w-none md:whitespace-nowrap md:px-4 ${
+        className={`mt-3 mb-3 w-full max-w-3xl px-1 text-center font-serif text-[13px] leading-snug tracking-[0.04em] text-muted transition-opacity duration-300 sm:px-2 sm:text-sm md:max-w-none md:whitespace-nowrap md:px-4 ${
           phase === "closed" ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
         aria-hidden={phase !== "closed"}
@@ -165,7 +169,7 @@ export function ShareExperience({ box }: ShareExperienceProps) {
         <BoxVisual
           shape={box.boxShape}
           color={box.boxColor}
-          size="xl"
+          size={boxSize}
           stacked
           lidVariant="ribbon"
           showTopFrame={chocolatesRevealed && !isComplete}
@@ -174,7 +178,7 @@ export function ShareExperience({ box }: ShareExperienceProps) {
           lidSettling={lidSettling}
         >
           {chocolatesRevealed && !isComplete && (
-            <BoxSlotLayer shape={box.boxShape} size="xl" spotCount={spotCount}>
+            <BoxSlotLayer shape={box.boxShape} size={boxSize} spotCount={spotCount}>
               {(index) => {
                 const choc = box.chocolates.find((c) => c.slotIndex === index);
                 if (!choc) return null;

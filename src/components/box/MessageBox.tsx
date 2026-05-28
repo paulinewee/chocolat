@@ -24,9 +24,6 @@ interface MessageBoxProps {
   className?: string;
 }
 
-/** Match pick editor sizing so this view feels identical. */
-const MESSAGE_CHOCOLATE_PX = BOX_CHOCOLATE_PX.fit;
-
 export function MessageBox({
   shape,
   color,
@@ -45,9 +42,9 @@ export function MessageBox({
 
   return (
     <div
-      className={`flex h-full min-h-0 w-full flex-col items-center overflow-visible ${className}`}
+      className={`flex h-full min-h-0 w-full flex-col items-center overflow-x-hidden overflow-y-visible ${className}`}
     >
-      <div className="flex min-h-0 w-full flex-1 items-center justify-center overflow-visible">
+      <div className="flex min-h-0 w-full flex-1 items-center justify-center overflow-x-hidden overflow-y-visible">
         <BoxVisual shape={shape} color={color} size={size} stacked className="mx-auto">
           <BoxSlotLayer shape={shape} size={size} spotCount={spotCount}>
             {(index) => {
@@ -71,7 +68,7 @@ export function MessageBox({
                     type={placed.type}
                     shapeId={placed.shapeId}
                     size="slot"
-                    pixelSize={MESSAGE_CHOCOLATE_PX}
+                    pixelSize={BOX_CHOCOLATE_PX[size]}
                     interactive
                     hasMessage={false}
                     onClick={() => onChocolateClick(index)}

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { BackButton } from "@/components/ui/BackButton";
 
 interface SiteHeaderProps {
-  title: string;
+  title: ReactNode;
   hint?: ReactNode;
   backHref?: string;
   /** Right-side nav action (e.g. NEXT) aligned with BACK */
@@ -19,23 +19,25 @@ export function SiteHeader({
   className = "",
 }: SiteHeaderProps) {
   return (
-    <header className={`relative mb-6 pt-2 text-center md:mb-8 md:pt-4 ${className}`}>
+    <header className={`relative mb-4 pt-1 text-center sm:mb-6 sm:pt-2 md:mb-8 md:pt-4 ${className}`}>
       {backHref && (
-        <div className="absolute left-0 top-2 md:top-2.5">
+        <div className="absolute left-0 top-1 sm:top-2 md:top-2.5">
           <BackButton href={backHref} />
         </div>
       )}
 
       {navEnd && (
-        <div className="absolute right-0 top-2 md:top-2.5">{navEnd}</div>
+        <div className="absolute right-0 top-1 sm:top-2 md:top-2.5">{navEnd}</div>
       )}
 
-      <h1 className="font-script text-[32px] italic tracking-tight md:text-[38px] lg:text-[44px]">
+      <h1 className="mx-auto max-w-[min(100%,14rem)] px-[4.75rem] font-script text-[26px] leading-tight italic tracking-tight sm:max-w-none sm:px-20 sm:text-[32px] md:text-[38px] lg:text-[44px]">
         {title}
       </h1>
 
       {hint && (
-        <p className="mt-4 font-mono text-xs tracking-[0.2em] text-muted">{hint}</p>
+        <p className="mt-3 font-mono text-[10px] tracking-[0.18em] text-muted sm:mt-4 sm:text-xs sm:tracking-[0.2em]">
+          {hint}
+        </p>
       )}
     </header>
   );

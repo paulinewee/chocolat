@@ -1,15 +1,25 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { ChocolateType } from "@/types";
+import type { ChocolateShapeId, ChocolateType } from "@/types";
 import { CHOCOLATE_SHAPES, CHOCOLATE_TYPES } from "@/lib/data";
 import { setChocolateDragData } from "@/lib/chocolate-drag";
 import { ChocolatePiece } from "./ChocolatePiece";
 
 /** Grid cell size for the 3×5 picker */
-const PICK_GRID_PX = 96;
+const PICK_GRID_PX = 88;
 
-export function ChocolatePicker() {
+export type PendingChocolate = {
+  type: ChocolateType;
+  shapeId: ChocolateShapeId;
+};
+
+interface ChocolatePickerProps {
+  pending?: PendingChocolate | null;
+  onSelect?: (type: ChocolateType, shapeId: ChocolateShapeId) => void;
+}
+
+export function ChocolatePicker({ pending, onSelect }: ChocolatePickerProps) {
   const [activeType, setActiveType] = useState<ChocolateType>("white");
   const scrollRef = useRef<HTMLDivElement>(null);
   const sectionRefs = useRef<Record<ChocolateType, HTMLElement | null>>({
@@ -22,9 +32,13 @@ export function ChocolatePicker() {
   const handleDragStart = (
     e: React.DragEvent,
     type: ChocolateType,
-    shapeId: (typeof CHOCOLATE_SHAPES)[number]["id"],
+    shapeId: ChocolateShapeId,
   ) => {
     setChocolateDragData(e, { type, shapeId });
+  };
+
+  const handleSelect = (type: ChocolateType, shapeId: ChocolateShapeId) => {
+    onSelect?.(type, shapeId);
   };
 
   const scrollToType = useCallback((type: ChocolateType) => {
@@ -75,13 +89,13 @@ export function ChocolatePicker() {
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <div className="mb-4 flex shrink-0 gap-2 py-1">
+      <div className="mb-3 flex shrink-0 gap-1.5 py-1 sm:mb-4 sm:gap-2">
         {CHOCOLATE_TYPES.map((type) => (
           <button
             key={type}
             type="button"
             onClick={() => scrollToType(type)}
-            className={`px-3 py-2 font-mono text-xs tracking-[0.2em] transition-colors md:px-4 md:py-2.5 ${
+            className={`min-h-11 touch-manipulation px-3 py-2.5 font-mono text-[10px] tracking-[0.16em] transition-colors sm:px-4 sm:text-xs sm:tracking-[0.2em] ${
               activeType === type
                 ? "text-ink underline underline-offset-4"
                 : "text-muted hover:text-ink/70"
@@ -91,6 +105,12 @@ export function ChocolatePicker() {
           </button>
         ))}
       </div>
+
+      {pending && (
+        <p className="mb-2 shrink-0 text-center font-serif text-[11px] tracking-[0.04em] text-muted sm:text-xs">
+          Tap a slot in the box to place this chocolate
+        </p>
+      )}
 
       <div
         ref={scrollRef}
@@ -104,25 +124,35 @@ export function ChocolatePicker() {
             ref={(node) => {
               sectionRefs.current[type] = node;
             }}
-            className="pb-8 last:pb-4"
+            className="pb-6 last:pb-3 sm:pb-8 sm:last:pb-4"
           >
-            <div className="grid w-full max-w-md grid-cols-3 justify-items-center gap-x-2 gap-y-3 sm:max-w-lg sm:gap-x-3 sm:gap-y-4 lg:max-w-xl">
-              {CHOCOLATE_SHAPES.map((shape) => (
-                <div
-                  key={`${type}-${shape.id}`}
-                  className="flex items-center justify-center"
-                  style={{ width: PICK_GRID_PX, height: PICK_GRID_PX }}
-                >
-                  <ChocolatePiece
-                    type={type}
-                    shapeId={shape.id}
-                    size="pick"
-                    pixelSize={PICK_GRID_PX}
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, type, shape.id)}
-                  />
-                </div>
-              ))}
+            <div className="grid w-full max-w-md grid-cols-3 justify-items-center gap-x-1 gap-y-2 sm:max-w-lg sm:gap-x-3 sm:gap-y-4 lg:max-w-xl">
+              {CHOCOLATE_SHAPES.map((shape) => {
+                const isPending =
+                  pending?.type === type && pending.shapeId === shape.id;
+                return (
+                  <button
+                    key={`${type}-${shape.id}`}
+                    type="button"
+                    onClick={() => handleSelect(type, shape.id)}
+                    className={`flex touch-manipulation items-center justify-center rounded-sm transition-shadow ${
+                      isPending ? "ring-2 ring-ink ring-offset-2 ring-offset-cream" : ""
+                    }`}
+                    style={{ width: PICK_GRID_PX, height: PICK_GRID_PX }}
+                    aria-pressed={isPending}
+                    aria-label={`Select ${shape.label} ${type} chocolate`}
+                  >
+                    <ChocolatePiece
+                      type={type}
+                      shapeId={shape.id}
+                      size="pick"
+                      pixelSize={PICK_GRID_PX}
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, type, shape.id)}
+                    />
+                  </button>
+                );
+              })}
             </div>
           </section>
         ))}

@@ -35,7 +35,7 @@ export const BOX_SLOT_CONFIGS: Record<BoxShape, BoxSlotConfig> = {
   },
   flower: {
     slots: [
-      { x: 49.0, y: 53.3 },
+      { x: 51.5, y: 41.5 }, // center (petals are indices 1–5)
       { x: 47.8, y: 23.2 },
       { x: 72.9, y: 35.0 },
       { x: 71.8, y: 56.6 },
@@ -81,4 +81,17 @@ export function slotContainerPosition(
 
 export function getBoxSlots(shape: BoxShape) {
   return BOX_SLOT_CONFIGS[shape].slots;
+}
+
+/** Center wells overlap petal hit targets — paint them last for drag/drop. */
+const CENTER_SLOT_INDEX: Partial<Record<BoxShape, number>> = {
+  flower: 0,
+  butterfly: 0,
+};
+
+export function getSlotDropRenderOrder(shape: BoxShape, count: number): number[] {
+  const center = CENTER_SLOT_INDEX[shape];
+  const indices = Array.from({ length: count }, (_, i) => i);
+  if (center === undefined || center >= count) return indices;
+  return [...indices.filter((i) => i !== center), center];
 }

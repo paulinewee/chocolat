@@ -55,8 +55,8 @@ function BoxShapeGrid({
   const bottomRow = BOX_SHAPES.slice(3);
 
   return (
-    <div className="flex w-full flex-col items-center gap-10 py-4 md:gap-14 md:py-6">
-      <div className="grid w-full max-w-3xl grid-cols-3 items-end gap-8 md:max-w-4xl md:gap-12">
+    <div className="flex w-full flex-col items-center gap-5 sm:gap-8 md:gap-12">
+      <div className="grid w-full max-w-3xl grid-cols-3 items-end gap-4 sm:gap-8 md:max-w-4xl md:gap-12">
         {topRow.map((box) => (
           <BoxOption
             key={box.id}
@@ -67,7 +67,7 @@ function BoxShapeGrid({
           />
         ))}
       </div>
-      <div className="flex w-full max-w-lg items-end justify-center gap-12 md:max-w-2xl md:gap-20">
+      <div className="flex w-full max-w-lg items-end justify-center gap-6 sm:gap-12 md:max-w-2xl md:gap-20">
         {bottomRow.map((box) => (
           <BoxOption
             key={box.id}
@@ -99,14 +99,14 @@ export default function PickBoxPage() {
         />
       }
     >
-      <div className="mb-8 flex justify-center gap-3 md:mb-10">
+      <div className="mb-6 flex justify-center gap-3 sm:mb-8 md:mb-10">
         {BOX_COLORS.map((c) => (
           <button
             key={c.id}
             type="button"
             onClick={() => setBoxColor(c.value)}
             aria-label={c.label}
-            className={`h-7 w-7 rounded-full border-2 transition-[transform,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+            className={`h-10 w-10 touch-manipulation rounded-full border-2 transition-[transform,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] sm:h-9 sm:w-9 md:h-7 md:w-7 ${
               draft.boxColor === c.value
                 ? "scale-110 border-ink"
                 : "border-ink/20"
@@ -116,7 +116,7 @@ export default function PickBoxPage() {
         ))}
       </div>
 
-      <div className="my-4 md:my-8">
+      <div>
         <BoxShapeGrid
           selected={draft.boxShape}
           color={draft.boxColor}

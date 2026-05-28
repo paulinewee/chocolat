@@ -15,7 +15,7 @@ const REDIRECT: Record<CreateStep, string> = {
 };
 
 /** Redirect to pick when the box is not fully filled. */
-export function useRequirePickComplete(_step: CreateStep) {
+export function useRequirePickComplete() {
   const router = useRouter();
   const { draft } = useBoxBuilder();
   const complete = isPickComplete(draft.boxShape, draft.chocolates);

@@ -26,6 +26,12 @@ export const metadata: Metadata = {
   description: "Build a box of chocolates for someone special",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{

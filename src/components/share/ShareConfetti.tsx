@@ -19,7 +19,7 @@ function createPieces() {
 }
 
 export function ShareConfetti({ active }: { active: boolean }) {
-  const pieces = useMemo(createPieces, []);
+  const pieces = useMemo(() => createPieces(), []);
 
   if (!active) return null;
 

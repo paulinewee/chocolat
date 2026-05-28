@@ -55,6 +55,8 @@ export function BoxBuilderProvider({ children }: { children: ReactNode }) {
     const stored = sessionStorage.getItem(SESSION_KEY);
     if (stored) {
       try {
+        // Restore in-progress builder from sessionStorage after client mount.
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- hydration from browser storage
         setDraft(normalizeBuilderDraft(JSON.parse(stored)));
       } catch {
         sessionStorage.removeItem(SESSION_KEY);
