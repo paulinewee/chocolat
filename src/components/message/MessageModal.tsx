@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { flowButtonClass, flowButtonSmClass } from "@/components/ui/buttonStyles";
+import { toMapEmbed, toSpotifyEmbed } from "@/lib/embed-utils";
 import type { ChocolateMessage } from "@/types";
 
 type AttachmentKind = "map" | "spotify" | "image";
@@ -91,149 +92,166 @@ export function MessageModal({
       aria-labelledby="message-modal-title"
     >
       <div
-        className="max-h-[90vh] w-full max-w-lg overflow-y-auto bg-cream p-6 shadow-lg"
+        className={`max-h-[90vh] w-full overflow-y-auto bg-cream shadow-lg ${mapUrl || spotifyUrl || imageUrl ? "max-w-3xl" : "max-w-lg"}`}
         onClick={(e) => e.stopPropagation()}
       >
-        <h2
-          id="message-modal-title"
-          className="font-mono text-xs tracking-[0.2em]"
-        >
-          MESSAGE FOR CHOCOLATE {slotIndex + 1}
-        </h2>
-
-        <div className="mt-4 flex flex-wrap gap-1 border border-ink/10 p-1">
-          {[
-            { cmd: "bold", label: "B" },
-            { cmd: "italic", label: "I" },
-            { cmd: "underline", label: "U" },
-          ].map(({ cmd, label }) => (
-            <button
-              key={cmd}
-              type="button"
-              onClick={() => exec(cmd)}
-              className="px-2 py-1 font-mono text-xs hover:bg-ink/5"
+        <div className={`flex ${mapUrl || spotifyUrl || imageUrl ? "flex-row" : "flex-col"}`}>
+          {/* Left column: editor + controls */}
+          <div className="flex min-w-0 flex-1 flex-col p-6">
+            <h2
+              id="message-modal-title"
+              className="font-mono text-xs tracking-[0.2em]"
             >
-              {label}
-            </button>
-          ))}
-        </div>
+              MESSAGE FOR CHOCOLATE {slotIndex + 1}
+            </h2>
 
-        <div
-          ref={editorRef}
-          contentEditable
-          suppressContentEditableWarning
-          data-placeholder="Write a note…"
-          className="rich-editor mt-3 min-h-[120px] border border-ink/15 p-3 font-serif text-sm leading-relaxed"
-        />
+            <div className="mt-4 flex flex-wrap gap-1 border border-ink/10 p-1">
+              {[
+                { cmd: "bold", label: "B" },
+                { cmd: "italic", label: "I" },
+                { cmd: "underline", label: "U" },
+              ].map(({ cmd, label }) => (
+                <button
+                  key={cmd}
+                  type="button"
+                  onClick={() => exec(cmd)}
+                  className="px-2 py-1 font-mono text-xs hover:bg-ink/5"
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
 
-        <div className="mt-4 flex items-center gap-2">
-          <AttachmentIconButton
-            kind="map"
-            label="Add location"
-            active={activeAttachment === "map"}
-            filled={hasAttachment("map")}
-            onClick={() => toggleAttachment("map")}
-          />
-          <AttachmentIconButton
-            kind="spotify"
-            label="Add song"
-            active={activeAttachment === "spotify"}
-            filled={hasAttachment("spotify")}
-            onClick={() => toggleAttachment("spotify")}
-          />
-          <AttachmentIconButton
-            kind="image"
-            label="Add image"
-            active={activeAttachment === "image"}
-            filled={hasAttachment("image")}
-            onClick={() => toggleAttachment("image")}
-          />
-        </div>
+            <div
+              ref={editorRef}
+              contentEditable
+              suppressContentEditableWarning
+              data-placeholder="Write a note…"
+              className="rich-editor mt-3 min-h-[120px] border border-ink/15 p-3 text-sm leading-relaxed"
+            />
 
-        {activeAttachment && (
-          <div className="mt-3 border border-ink/10 bg-white/50 p-3">
-            <div className="flex items-center justify-between gap-2">
-              <span className="font-mono text-[10px] tracking-widest text-muted">
-                {activeAttachment === "map" && "LOCATION"}
-                {activeAttachment === "spotify" && "SONG"}
-                {activeAttachment === "image" && "IMAGE"}
-              </span>
-              {hasAttachment(activeAttachment) && (
+            <div className="mt-4 flex items-center gap-2">
+              <AttachmentIconButton
+                kind="map"
+                label="Add location"
+                active={activeAttachment === "map"}
+                filled={hasAttachment("map")}
+                onClick={() => toggleAttachment("map")}
+              />
+              <AttachmentIconButton
+                kind="spotify"
+                label="Add song"
+                active={activeAttachment === "spotify"}
+                filled={hasAttachment("spotify")}
+                onClick={() => toggleAttachment("spotify")}
+              />
+              <AttachmentIconButton
+                kind="image"
+                label="Add image"
+                active={activeAttachment === "image"}
+                filled={hasAttachment("image")}
+                onClick={() => toggleAttachment("image")}
+              />
+            </div>
+
+            {activeAttachment && (
+              <div className="mt-3 border border-ink/10 bg-white/50 p-3">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-mono text-[10px] tracking-widest text-muted">
+                    {activeAttachment === "map" && "LOCATION"}
+                    {activeAttachment === "spotify" && "SONG"}
+                    {activeAttachment === "image" && "IMAGE"}
+                  </span>
+                  {hasAttachment(activeAttachment) && (
+                    <button
+                      type="button"
+                      onClick={() => clearAttachment(activeAttachment)}
+                      className="font-mono text-[10px] tracking-widest text-muted hover:text-ink"
+                    >
+                      REMOVE
+                    </button>
+                  )}
+                </div>
+                <input
+                  type="url"
+                  autoFocus
+                  value={attachmentValue(activeAttachment)}
+                  onChange={(e) => setAttachmentValue(activeAttachment, e.target.value)}
+                  placeholder={
+                    activeAttachment === "map"
+                      ? "https://maps.google.com/…"
+                      : activeAttachment === "spotify"
+                        ? "https://open.spotify.com/track/…"
+                        : "https://…"
+                  }
+                  className="mt-2 w-full border border-ink/15 bg-cream px-3 py-2 text-sm"
+                />
+              </div>
+            )}
+
+            <div className="mt-6 flex justify-between gap-3">
+              <button
+                type="button"
+                onClick={onClear}
+                className={`text-muted hover:text-ink ${flowButtonSmClass}`}
+              >
+                Clear
+              </button>
+              <div className="flex gap-3">
                 <button
                   type="button"
-                  onClick={() => clearAttachment(activeAttachment)}
-                  className="font-mono text-[10px] tracking-widest text-muted hover:text-ink"
+                  onClick={onClose}
+                  className={`px-4 py-2 text-muted ${flowButtonSmClass}`}
                 >
-                  REMOVE
+                  Cancel
                 </button>
+                <button
+                  type="button"
+                  onClick={handleSave}
+                  className={`${flowButtonClass} bg-ink text-cream hover:bg-ink/88`}
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Right column: live embed */}
+          {(mapUrl || spotifyUrl || imageUrl) && (
+            <div className="w-[48%] shrink-0 self-stretch border-l border-ink/10">
+              {spotifyUrl && (
+                <iframe
+                  src={toSpotifyEmbed(spotifyUrl)}
+                  width="100%"
+                  height="100%"
+                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                  loading="lazy"
+                  className="min-h-[280px] border-0"
+                  title="Spotify"
+                />
+              )}
+              {mapUrl && !spotifyUrl && (
+                <iframe
+                  src={toMapEmbed(mapUrl)}
+                  width="100%"
+                  height="100%"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  className="min-h-[280px] border-0"
+                  title="Map"
+                />
+              )}
+              {imageUrl && !spotifyUrl && !mapUrl && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={imageUrl}
+                  alt=""
+                  className="h-full w-full object-cover"
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                />
               )}
             </div>
-            <input
-              type="url"
-              autoFocus
-              value={attachmentValue(activeAttachment)}
-              onChange={(e) => setAttachmentValue(activeAttachment, e.target.value)}
-              placeholder={
-                activeAttachment === "map"
-                  ? "https://maps.google.com/…"
-                  : activeAttachment === "spotify"
-                    ? "https://open.spotify.com/track/…"
-                    : "https://…"
-              }
-              className="mt-2 w-full border border-ink/15 bg-cream px-3 py-2 text-sm"
-            />
-            {activeAttachment === "image" && imageUrl && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={imageUrl}
-                alt="Preview"
-                className="mt-3 max-h-28 w-full object-cover"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = "none";
-                }}
-              />
-            )}
-          </div>
-        )}
-
-        {(mapUrl || spotifyUrl || imageUrl) && !activeAttachment && (
-          <div className="mt-3 flex flex-wrap gap-2">
-            {mapUrl && (
-              <AttachmentChip label="Location" onEdit={() => setActiveAttachment("map")} />
-            )}
-            {spotifyUrl && (
-              <AttachmentChip label="Song" onEdit={() => setActiveAttachment("spotify")} />
-            )}
-            {imageUrl && (
-              <AttachmentChip label="Image" onEdit={() => setActiveAttachment("image")} />
-            )}
-          </div>
-        )}
-
-        <div className="mt-6 flex justify-between gap-3">
-          <button
-            type="button"
-            onClick={onClear}
-            className={`text-muted hover:text-ink ${flowButtonSmClass}`}
-          >
-            Clear
-          </button>
-          <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className={`px-4 py-2 text-muted ${flowButtonSmClass}`}
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              onClick={handleSave}
-              className={`${flowButtonClass} bg-ink text-cream hover:bg-ink/88`}
-            >
-              Save
-            </button>
-          </div>
+          )}
         </div>
       </div>
     </div>

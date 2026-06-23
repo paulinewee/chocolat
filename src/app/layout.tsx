@@ -1,24 +1,21 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Geist } from "next/font/google";
 import localFont from "next/font/local";
+import { PagePaperTexture } from "@/components/ui/PagePaperTexture";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const apercuMono = localFont({
-  src: "./fonts/ApercuMono.otf",
-  variable: "--font-apercu-mono",
+const exposure = localFont({
+  src: [
+    {
+      path: "../../public/205TF_Exposure_Trial/ExposureTrialVAR.ttf",
+      style: "normal",
+    },
+    {
+      path: "../../public/205TF_Exposure_Trial/ExposureTrialVAR-Italic.ttf",
+      style: "italic",
+    },
+  ],
+  variable: "--font-exposure",
   display: "swap",
-});
-
-const cormorant = Cormorant_Garamond({
-  variable: "--font-cormorant",
-  subsets: ["latin"],
-  weight: ["400", "600"],
-  style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {
@@ -38,11 +35,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${apercuMono.variable} ${cormorant.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col bg-cream text-ink">{children}</body>
+    <html lang="en" className={`${exposure.variable} h-full antialiased`}>
+      <body className="relative min-h-full flex flex-col font-sans text-ink">
+        <PagePaperTexture />
+        <div className="relative z-10 flex min-h-full flex-1 flex-col">{children}</div>
+      </body>
     </html>
   );
 }

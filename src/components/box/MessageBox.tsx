@@ -44,7 +44,7 @@ export function MessageBox({
     <div
       className={`flex h-full min-h-0 w-full flex-col items-center overflow-x-hidden overflow-y-visible ${className}`}
     >
-      <div className="flex min-h-0 w-full flex-1 items-center justify-center overflow-x-hidden overflow-y-visible">
+      <div className="flex min-h-0 w-full flex-1 items-center justify-center overflow-visible px-1">
         <BoxVisual shape={shape} color={color} size={size} stacked className="mx-auto">
           <BoxSlotLayer shape={shape} size={size} spotCount={spotCount}>
             {(index) => {
@@ -59,10 +59,44 @@ export function MessageBox({
                   className={`relative flex items-center justify-center ${outAnim ? "message-slot-anim-out" : ""} ${inAnim ? "message-slot-anim-in" : ""}`}
                 >
                   {hasMessage && (
-                    <span
+                    <svg
                       aria-hidden
-                      className="pointer-events-none absolute z-0 h-[72%] w-[98%] rounded-sm bg-white/80"
-                    />
+                      className="pointer-events-none absolute z-0 h-[72%] w-[98%] overflow-visible"
+                      viewBox="0 0 100 100"
+                      preserveAspectRatio="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <defs>
+                        <filter id="brush-box" x="-10%" y="-10%" width="120%" height="120%">
+                          <feTurbulence
+                            type="fractalNoise"
+                            baseFrequency="0.035 0.055"
+                            numOctaves="4"
+                            seed="11"
+                            result="noise"
+                          />
+                          <feDisplacementMap
+                            in="SourceGraphic"
+                            in2="noise"
+                            scale="4"
+                            xChannelSelector="R"
+                            yChannelSelector="G"
+                          />
+                        </filter>
+                      </defs>
+                      {/* Fill */}
+                      <rect x="0" y="0" width="100" height="100" fill="rgba(255,255,255,0.82)" />
+                      {/* Hand-drawn brush border */}
+                      <rect
+                        x="4" y="4" width="92" height="92"
+                        fill="none"
+                        stroke="#361700"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        filter="url(#brush-box)"
+                      />
+                    </svg>
                   )}
                   <ChocolatePiece
                     type={placed.type}

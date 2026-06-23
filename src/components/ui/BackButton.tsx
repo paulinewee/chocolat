@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { flowButtonClass } from "@/components/ui/buttonStyles";
+import { BrushNavArrow, navControlClass } from "@/components/ui/BrushNavArrow";
 
 interface BackButtonProps {
   href: string;
@@ -7,16 +7,14 @@ interface BackButtonProps {
   className?: string;
 }
 
-export function BackButton({ href, label = "Back", className = "" }: BackButtonProps) {
+export function BackButton({ href, label = "back", className = "" }: BackButtonProps) {
   return (
     <Link
       href={href}
-      className={
-        `${flowButtonClass} border border-ink/20 bg-white text-ink transition-colors hover:border-ink/40 hover:bg-cream ` +
-        className
-      }
+      aria-label={label}
+      className={`${navControlClass} ${className}`}
     >
-      {label}
+      <BrushNavArrow direction="left" />
     </Link>
   );
 }

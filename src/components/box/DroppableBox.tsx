@@ -81,7 +81,7 @@ export function DroppableBox({
     <div
       className={`flex h-full min-h-0 w-full flex-col items-center overflow-hidden ${className}`}
     >
-      <div className="flex min-h-0 w-full flex-1 items-center justify-center overflow-hidden">
+      <div className="flex min-h-0 w-full flex-1 items-center justify-center overflow-visible px-1">
         <BoxVisual
           shape={shape}
           color={color}
@@ -130,12 +130,6 @@ export function DroppableBox({
       </BoxVisual>
       </div>
 
-      <p className="mt-2 shrink-0 px-2 pb-1 text-center font-mono text-[9px] leading-relaxed tracking-[0.14em] text-muted sm:text-[10px] sm:tracking-[0.18em] md:text-xs md:tracking-[0.2em]">
-        <span className="sm:hidden">TAP A CHOCOLATE, THEN TAP A SLOT · TAP IN BOX TO REMOVE</span>
-        <span className="hidden sm:inline">
-          CLICK CHOCOLATE TO REMOVE OR DRAG IN A NEW CHOCOLATE TO REPLACE
-        </span>
-      </p>
     </div>
   );
 }

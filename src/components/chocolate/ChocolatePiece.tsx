@@ -85,25 +85,27 @@ export function ChocolatePiece({
         />
       )}
       {draggable ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={src}
-          alt={shape?.label ?? "Chocolate"}
-          width={px}
-          height={px}
-          draggable={false}
-          onContextMenu={preventImageContextMenu}
-          onDragStart={preventImageDragStart}
-          className={`relative z-[1] h-auto w-full bg-transparent object-contain drop-shadow-sm ${PROTECTED_IMAGE_CLASS}`}
-          style={{ width: px, height: px }}
-        />
+        <span className="relative z-[1]" style={{ width: px, height: px }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={src}
+            alt={shape?.label ?? "Chocolate"}
+            width={px}
+            height={px}
+            draggable={false}
+            onContextMenu={preventImageContextMenu}
+            onDragStart={preventImageDragStart}
+            className={`h-auto w-full bg-transparent object-contain ${PROTECTED_IMAGE_CLASS}`}
+            style={{ width: px, height: px }}
+          />
+        </span>
       ) : (
         <AssetImage
           src={src}
           alt={shape?.label ?? "Chocolate"}
           width={px}
           height={px}
-          className="relative z-[1] h-auto w-full bg-transparent object-contain drop-shadow-sm"
+          className={`relative z-[1] h-auto w-full bg-transparent object-contain ${PROTECTED_IMAGE_CLASS}`}
           style={{ width: px, height: px }}
         />
       )}

@@ -2,12 +2,17 @@
 
 :root {
   --cream: #faf9f6;
+  --beige: #f5efe2;
   --ink: #1a1a1a;
   --muted: #6b6b6b;
   --button-bg: #1a1a1a;
   --button-text: #faf9f6;
   --button-disabled-bg: #ebe8e3;
   --button-disabled-text: #8a8a8a;
+  --asset-brightness: 1.08;
+  --asset-contrast: 1.06;
+  --asset-saturate: 1.12;
+  --asset-screen: 0.1;
 }
 
 @theme inline {
@@ -18,15 +23,31 @@
   --color-button-text: var(--button-text);
   --color-button-disabled-bg: var(--button-disabled-bg);
   --color-button-disabled-text: var(--button-disabled-text);
-  --font-script: var(--font-cormorant);
-  --font-mono: var(--font-apercu-mono);
+  --font-sans: var(--font-exposure);
+  --font-mono: var(--font-exposure);
+  --font-serif: var(--font-exposure);
+}
+
+html {
+  min-height: 100%;
+  background-color: var(--beige);
 }
 
 body {
-  background: var(--cream);
+  min-height: 100%;
+  position: relative;
+  background-color: var(--beige);
   color: var(--ink);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-family: var(--font-exposure), Georgia, serif;
+  text-transform: lowercase;
+  -webkit-text-stroke: 1px currentColor;
+  paint-order: stroke fill;
   overflow-x: hidden;
+}
+
+.page-paper-texture {
+  opacity: 0.65;
+  mix-blend-mode: multiply;
 }
 
 .safe-pad-x {
@@ -34,8 +55,12 @@ body {
   padding-right: max(1rem, env(safe-area-inset-right));
 }
 
-.font-script {
-  font-family: var(--font-cormorant), Georgia, serif;
+/* Legacy font utilities — all Alice */
+.font-script,
+.font-serif,
+.font-mono,
+.font-sans {
+  font-family: var(--font-exposure), Georgia, serif;
 }
 
 /* Rich text editor placeholder */
@@ -63,6 +88,21 @@ body {
 .lid-lifted {
   animation: lid-lift 0.8s ease forwards;
   transform-origin: bottom center;
+}
+
+/* Lid propped up to the left of the open box */
+@keyframes lid-prop-in {
+  0% {
+    opacity: 0;
+    transform: rotate(-6deg);
+  }
+  55% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(-22deg);
+  }
 }
 
 @keyframes lid-settle {
@@ -257,12 +297,13 @@ body {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  min-height: min(29vh, 210px);
+  min-height: min(24vh, 175px);
+  overflow: visible;
 }
 
 @media (min-width: 768px) {
   .box-picker-cell {
-    min-height: min(30vh, 232px);
+    min-height: min(25vh, 195px);
   }
 }
 
@@ -329,4 +370,34 @@ body {
 /* Brand artwork — discourage save-as, drag-out, and long-press on iOS */
 .asset-protected {
   -webkit-touch-callout: none;
+  filter: brightness(var(--asset-brightness)) contrast(var(--asset-contrast))
+    saturate(var(--asset-saturate));
+}
+
+/* Soft screen lift on illustrations */
+.asset-boost {
+  position: relative;
+  display: inline-block;
+  isolation: isolate;
+  line-height: 0;
+}
+
+.asset-boost::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: rgb(255 252 247 / var(--asset-screen));
+  mix-blend-mode: screen;
+}
+
+/* Cross-fade animations for color-variant transitions */
+@keyframes asset-fade-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+@keyframes asset-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }

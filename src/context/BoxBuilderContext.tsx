@@ -156,8 +156,8 @@ export function BoxBuilderProvider({ children }: { children: ReactNode }) {
 
   if (!hydrated) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-cream">
-        <span className="font-mono text-xs tracking-widest text-ink/50">LOADING…</span>
+      <div className="flex min-h-screen items-center justify-center">
+        <span className="font-mono text-xs tracking-widest text-ink/50">loading…</span>
       </div>
     );
   }

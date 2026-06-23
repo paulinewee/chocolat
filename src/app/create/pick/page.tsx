@@ -17,7 +17,7 @@ export default function PickChocolatesPage() {
   const filledCount = draft.chocolates.length;
 
   return (
-    <main className="flex h-dvh max-h-dvh flex-col overflow-hidden bg-cream">
+    <main className="flex h-dvh max-h-dvh flex-col overflow-hidden">
       <div className="safe-pad-x mx-auto flex h-full min-h-0 w-full max-w-[1400px] flex-col overflow-hidden px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] md:px-8 md:py-6">
         <SiteHeader
           className="mb-3 shrink-0 md:mb-5"
@@ -37,7 +37,7 @@ export default function PickChocolatesPage() {
           }
         />
 
-        <p className="mb-2 shrink-0 text-center font-serif text-[11px] tracking-[0.04em] text-muted sm:hidden">
+        <p className="mb-2 shrink-0 text-center text-[11px] tracking-[0.04em] text-muted sm:hidden">
           Tap a chocolate, then tap a slot — or drag on desktop
         </p>
 
@@ -49,7 +49,7 @@ export default function PickChocolatesPage() {
             />
           </div>
 
-          <div className="flex h-full min-h-0 flex-col items-center overflow-hidden">
+          <div className="flex h-full min-h-0 flex-col items-center overflow-visible">
             <DroppableBox
               className="h-full"
               shape={draft.boxShape}

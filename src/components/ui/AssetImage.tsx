@@ -13,7 +13,7 @@ function isSvgSrc(src: ImageProps["src"]): boolean {
   return typeof src === "string" && src.endsWith(".svg");
 }
 
-/** Local /public asset image with version key for cache busting (no query string). */
+/** Local /public asset image (page-level paper texture is applied globally). */
 export function AssetImage({
   src,
   alt = "",
@@ -21,6 +21,7 @@ export function AssetImage({
   draggable = false,
   onContextMenu,
   onDragStart,
+  style,
   ...props
 }: ImageProps) {
   const srcKey = typeof src === "string" ? src : "";
@@ -42,6 +43,7 @@ export function AssetImage({
         onDragStart,
       )}
       className={`${PROTECTED_IMAGE_CLASS} ${className}`.trim()}
+      style={style}
       {...props}
     />
   );

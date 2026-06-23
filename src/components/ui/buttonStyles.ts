@@ -1,7 +1,7 @@
-/** Shared nav / flow button sizing */
+/** Shared flow chrome (back / next) */
 export const flowButtonClass =
-  "inline-flex min-w-[8.8rem] items-center justify-center px-8 py-3 text-center font-serif text-[15px] tracking-[0.04em] normal-case";
+  "inline-flex min-w-[8.8rem] items-center justify-center px-8 py-3 text-center font-sans text-[15px] tracking-[0.04em]";
 
-/** Smaller action buttons (e.g. Clear / Save on message card) */
+/** Smaller variant for in-panel actions */
 export const flowButtonSmClass =
-  "font-serif text-[13px] tracking-[0.04em] normal-case";
+  "font-sans text-[13px] tracking-[0.04em]";

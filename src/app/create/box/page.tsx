@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { AssetImage } from "@/components/ui/AssetImage";
+import { FadingAssetImage } from "@/components/ui/FadingAssetImage";
 import { NextButton } from "@/components/ui/NextButton";
 import { PageShell } from "@/components/ui/PageShell";
 import { useBoxBuilder } from "@/context/BoxBuilderContext";
@@ -30,12 +30,12 @@ function BoxOption({
         className={`box-picker-btn ${selected ? "box-picker-btn--selected" : ""}`}
       >
         <span className="box-picker-halo" aria-hidden />
-        <AssetImage
+        <FadingAssetImage
           src={getBoxImageSrc(box.id as BoxShape, "full", color)}
           alt=""
           width={BOX_IMAGE_SIZES.picker.w}
           height={BOX_IMAGE_SIZES.picker.h}
-          className="relative z-[1] mx-auto h-auto w-full max-h-[min(32vh,220px)] object-contain sm:max-h-[min(34vh,245px)] md:max-h-[265px]"
+          containerClassName="relative z-[1] mx-auto aspect-square w-full max-h-[min(26vh,175px)] sm:max-h-[min(32vh,220px)] md:max-h-[265px]"
         />
       </button>
     </div>
@@ -55,8 +55,8 @@ function BoxShapeGrid({
   const bottomRow = BOX_SHAPES.slice(3);
 
   return (
-    <div className="flex w-full flex-col items-center gap-5 sm:gap-8 md:gap-12">
-      <div className="grid w-full max-w-3xl grid-cols-3 items-end gap-4 sm:gap-8 md:max-w-4xl md:gap-12">
+    <div className="flex w-full flex-col items-center gap-1 sm:gap-2 md:gap-3">
+      <div className="grid w-full max-w-3xl grid-cols-3 items-end gap-3 overflow-visible px-1 sm:gap-8 sm:px-0 md:max-w-4xl md:gap-12">
         {topRow.map((box) => (
           <BoxOption
             key={box.id}
@@ -116,7 +116,7 @@ export default function PickBoxPage() {
         ))}
       </div>
 
-      <div>
+      <div className="overflow-visible px-1 sm:px-0">
         <BoxShapeGrid
           selected={draft.boxShape}
           color={draft.boxColor}

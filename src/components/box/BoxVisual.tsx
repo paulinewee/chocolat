@@ -130,7 +130,7 @@ export function BoxVisual({
                 alt=""
                 width={dims.w}
                 height={dims.h}
-                className={`${LAYER_IMAGE_CLASS} drop-shadow-md`}
+                className={LAYER_IMAGE_CLASS}
                 draggable={false}
               />
         </button>

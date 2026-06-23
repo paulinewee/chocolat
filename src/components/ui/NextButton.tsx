@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { flowButtonClass } from "@/components/ui/buttonStyles";
+import { BrushNavArrow, navControlClass } from "@/components/ui/BrushNavArrow";
 
 interface NextButtonProps {
   href?: string;
@@ -15,20 +15,17 @@ export function NextButton({
   href,
   onClick,
   disabled,
-  label = "Next",
+  label = "next",
   className = "",
 }: NextButtonProps) {
-  const enabled =
-    "bg-ink text-cream shadow-sm transition-[background-color,transform] hover:bg-ink/88 active:scale-[0.98]";
-  const inactive =
-    "cursor-not-allowed border border-ink/12 bg-button-disabled-bg text-button-disabled-text";
+  const controlClass = `${navControlClass} ${className}`;
 
-  const base = `${flowButtonClass} ${disabled ? inactive : enabled}`;
+  const arrow = <BrushNavArrow direction="right" />;
 
   if (href && !disabled) {
     return (
-      <Link href={href} className={`${base} ${className}`}>
-        {label}
+      <Link href={href} aria-label={label} className={controlClass}>
+        {arrow}
       </Link>
     );
   }
@@ -38,9 +35,10 @@ export function NextButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`${base} ${className}`}
+      aria-label={label}
+      className={controlClass}
     >
-      {label}
+      {arrow}
     </button>
   );
 }
