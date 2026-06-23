@@ -137,40 +137,6 @@ export function MessageSidePanel({
        />
       </div>
 
-      {activeAttachment && (
-       <div className="mt-3 border border-ink/30 bg-white/60 p-3">
-        <div className="flex items-center justify-between gap-2">
-         <span className="text-[12px] tracking-[0.04em] text-ink/75">
-          {activeAttachment === "map" && "Location"}
-          {activeAttachment === "spotify" && "Song"}
-          {activeAttachment === "image" && "Image"}
-         </span>
-         {hasAttachment(activeAttachment) && (
-          <button
-           type="button"
-           onClick={() => clearAttachment(activeAttachment)}
-           className="text-[12px] tracking-[0.04em] text-muted hover:text-ink"
-          >
-           Remove
-          </button>
-         )}
-        </div>
-        <input
-         type="url"
-         autoFocus
-         value={attachmentValue(activeAttachment)}
-         onChange={(e) => setAttachmentValue(activeAttachment, e.target.value)}
-         placeholder={
-          activeAttachment === "map"
-           ? "https://maps.google.com/..."
-           : activeAttachment === "spotify"
-            ? "https://open.spotify.com/track/..."
-            : "https://..."
-         }
-         className="mt-2 w-full border border-ink/25 bg-cream px-3 py-2 text-sm"
-        />
-       </div>
-      )}
 
        <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
@@ -188,27 +154,6 @@ export function MessageSidePanel({
            {label}
           </button>
          ))}
-         <AttachmentIconButton
-          kind="map"
-          label="Add location"
-          active={activeAttachment === "map"}
-          filled={hasAttachment("map")}
-          onClick={() => toggleAttachment("map")}
-         />
-         <AttachmentIconButton
-          kind="spotify"
-          label="Add song"
-          active={activeAttachment === "spotify"}
-          filled={hasAttachment("spotify")}
-          onClick={() => toggleAttachment("spotify")}
-         />
-         <AttachmentIconButton
-          kind="image"
-          label="Add image"
-          active={activeAttachment === "image"}
-          filled={hasAttachment("image")}
-          onClick={() => toggleAttachment("image")}
-         />
         </div>
         <div className="flex shrink-0 items-center gap-2">
          <button
