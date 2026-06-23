@@ -231,15 +231,15 @@ export function MessageSidePanel({
 
      {/* ── Right column: live embed ── */}
      {(mapUrl || spotifyUrl || imageUrl) && (
-      <div className="w-[48%] shrink-0 self-stretch border-l-2 border-black/10">
+      <div className="flex w-[48%] shrink-0 flex-col justify-center self-stretch border-l-2 border-black/10 p-4">
        {spotifyUrl && (
         <iframe
          src={toSpotifyEmbed(spotifyUrl)}
          width="100%"
-         height="100%"
+         height="200"
          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
          loading="lazy"
-         className="min-h-[200px] border-0"
+         className="rounded border-0"
          title="Spotify"
         />
        )}
@@ -247,10 +247,10 @@ export function MessageSidePanel({
         <iframe
          src={toMapEmbed(mapUrl)}
          width="100%"
-         height="100%"
+         height="200"
          loading="lazy"
          referrerPolicy="no-referrer-when-downgrade"
-         className="min-h-[200px] border-0"
+         className="rounded border-0"
          title="Map"
         />
        )}
@@ -273,17 +273,17 @@ export function MessageSidePanel({
      type="button"
      onClick={onPrev}
      aria-label="Previous chocolate"
-     className="flex h-11 w-11 touch-manipulation items-center justify-center font-mono text-lg text-ink/70 transition-colors hover:text-ink sm:h-8 sm:w-8 sm:text-base"
+     className="flex h-11 w-11 touch-manipulation items-center justify-center text-ink/70 transition-colors hover:text-ink sm:h-8 sm:w-8"
     >
-     ←
+     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
     </button>
     <button
      type="button"
      onClick={onNext}
      aria-label="Next chocolate"
-     className="flex h-11 w-11 touch-manipulation items-center justify-center font-mono text-lg text-ink/70 transition-colors hover:text-ink sm:h-8 sm:w-8 sm:text-base"
+     className="flex h-11 w-11 touch-manipulation items-center justify-center text-ink/70 transition-colors hover:text-ink sm:h-8 sm:w-8"
     >
-     →
+     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </button>
    </div>
    </div>
