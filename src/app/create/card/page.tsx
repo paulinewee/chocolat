@@ -56,20 +56,20 @@ export default function WriteCardPage() {
   >
    <div className="relative flex w-full flex-1 flex-col items-center overflow-visible">
     {/* Card — upper area, large */}
-    <div className="relative z-10 mx-auto mt-2 w-[min(92%,440px)] sm:mt-4">
-     <div className="border-2 border-ink bg-cream px-5 py-5 shadow-sm sm:px-7 sm:py-6">
+    <div className="relative z-10 mx-auto mt-2 w-[min(86%,380px)] sm:mt-4">
+     <div className="border-2 border-ink bg-cream px-4 py-4 shadow-sm sm:px-6 sm:py-5">
       <textarea
        value={draft.cardText}
        onChange={(e) => setCardText(e.target.value)}
        placeholder="Dear you, ..."
-       rows={9}
-       className="min-h-[200px] w-full resize-none bg-transparent p-1 text-center text-xl leading-relaxed text-ink placeholder:text-ink/45 focus:outline-none sm:min-h-[230px] sm:text-2xl"
+       rows={7}
+       className="min-h-[160px] w-full resize-none bg-transparent p-1 text-center text-lg leading-relaxed text-ink placeholder:text-ink/45 focus:outline-none sm:min-h-[190px] sm:text-xl"
       />
      </div>
     </div>
 
     {/* Box image — large, sits below the card and naturally overflows the page */}
-    <div className="pointer-events-none absolute top-[52%] left-1/2 w-[min(160%,980px)] -translate-x-1/2">
+    <div className="pointer-events-none absolute top-[10%] left-1/2 w-[min(160%,980px)] -translate-x-1/2">
      <AssetImage
       key={ribbon1Src}
       src={cardBgSrc}
