@@ -6,8 +6,7 @@ import { CHOCOLATE_SHAPES, CHOCOLATE_TYPES } from "@/lib/data";
 import { setChocolateDragData } from "@/lib/chocolate-drag";
 import { ChocolatePiece } from "./ChocolatePiece";
 
-/** Cell size for the picker tiles */
-const PICK_GRID_PX = 110;
+const PICK_GRID_PX = 88;
 
 /** Approximate swatch color for each chocolate type */
 const CHOCOLATE_TYPE_COLORS: Record<ChocolateType, string> = {
@@ -39,14 +38,16 @@ function ShapeGrid({
   pending,
   onSelect,
   onDragStart,
+  cellPx,
 }: {
   type: ChocolateType;
   pending?: PendingChocolate | null;
   onSelect: (type: ChocolateType, shapeId: ChocolateShapeId) => void;
   onDragStart: (e: React.DragEvent, type: ChocolateType, shapeId: ChocolateShapeId) => void;
+  cellPx: number;
 }) {
   return (
-    <div className="grid grid-cols-4 gap-x-3 gap-y-6 sm:gap-x-5 sm:gap-y-8">
+    <div className="flex flex-nowrap gap-x-4 sm:grid sm:grid-cols-4 sm:gap-x-5 sm:gap-y-8">
       {CHOCOLATE_SHAPES.map((shape, index) => {
         const isPending =
           pending?.type === type && pending.shapeId === shape.id;
@@ -58,7 +59,7 @@ function ShapeGrid({
             className={`group/choc relative mx-auto flex touch-manipulation items-center justify-center rounded-full outline-none transition-transform duration-200 ease-out hover:z-10 hover:-translate-y-2 focus-visible:z-10 focus-visible:-translate-y-2 ${
               isPending ? "z-10 -translate-y-1" : ""
             }`}
-            style={{ width: PICK_GRID_PX, height: PICK_GRID_PX }}
+            style={{ width: cellPx, height: cellPx }}
             aria-pressed={isPending}
             aria-label={`Select ${shape.label} ${type} chocolate`}
           >
@@ -70,7 +71,7 @@ function ShapeGrid({
                 type={type}
                 shapeId={shape.id}
                 size="pick"
-                pixelSize={PICK_GRID_PX}
+                pixelSize={cellPx}
                 draggable
                 onDragStart={(e) => onDragStart(e, type, shape.id)}
               />
@@ -114,8 +115,9 @@ export function ChocolatePicker({ pending, onSelect }: ChocolatePickerProps) {
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      {/* Type tabs — colored circles like the box color picker */}
-      <div className="mb-3 flex shrink-0 items-center justify-center gap-3 py-1 sm:mb-4 sm:gap-3.5">
+      {/* Color circles — DOM-first so desktop shows them at top naturally (sm:order-1).
+          On mobile pushed below the strip via order-2. */}
+      <div className="order-2 mt-2 flex shrink-0 items-center justify-center gap-3 sm:order-1 sm:mb-3 sm:mt-0 sm:gap-3.5">
         {CHOCOLATE_TYPES.map((type) => (
           <button
             key={type}
@@ -123,7 +125,7 @@ export function ChocolatePicker({ pending, onSelect }: ChocolatePickerProps) {
             onClick={() => handleTypeChange(type)}
             aria-label={type}
             aria-pressed={activeType === type}
-            className={`h-9 w-9 touch-manipulation rounded-full border-2 transition-[transform,border-color,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] sm:h-8 sm:w-8 md:h-7 md:w-7 ${
+            className={`h-7 w-7 touch-manipulation rounded-full border-2 transition-[transform,border-color,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] md:h-6 md:w-6 ${
               activeType === type
                 ? "scale-110 border-ink"
                 : "border-ink/20 hover:border-ink/40"
@@ -133,33 +135,32 @@ export function ChocolatePicker({ pending, onSelect }: ChocolatePickerProps) {
         ))}
       </div>
 
-      {pending && (
-        <p className="mb-2 shrink-0 text-center text-[11px] tracking-[0.04em] text-muted sm:text-xs">
-          tap a slot in the box to place this chocolate
-        </p>
-      )}
+      {/* Hint — always in DOM (opacity only) so it never causes layout shift.
+          order-3 keeps it after circles on mobile; hidden on desktop. */}
+      <p className={`order-3 mt-1 shrink-0 text-center text-[11px] tracking-[0.04em] text-muted transition-opacity duration-200 sm:hidden ${pending ? "opacity-100" : "opacity-0"}`}>
+        tap a slot in the box to place this chocolate
+      </p>
 
-      {/* Cross-fading section — only one type visible at a time */}
-      <div className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch]">
-        {/* Active section fades in */}
+      {/* Chocolate strip — order-1 puts it first on mobile; sm:order-2 keeps it below circles on desktop. */}
+      <div className="relative order-1 min-h-0 flex-1 overflow-x-auto overflow-y-hidden overscroll-contain sm:order-2 sm:overflow-x-hidden sm:overflow-y-auto [-webkit-overflow-scrolling:touch]">
         <section
           key={`active-${activeType}`}
-          className="px-1 pb-6 pt-7 sm:pb-8 animate-[asset-fade-in_280ms_ease-out_forwards]"
+          className="flex items-center px-2 py-3 sm:block sm:py-0 sm:px-1 sm:pb-8 sm:pt-7 animate-[asset-fade-in_280ms_ease-out_forwards]"
         >
           <ShapeGrid
             type={activeType}
             pending={pending}
             onSelect={handleSelect}
             onDragStart={handleDragStart}
+            cellPx={PICK_GRID_PX}
           />
         </section>
 
-        {/* Previous section fades out on top */}
         {prevType && (
           <section
             key={`fading-${prevType}`}
             aria-hidden
-            className="pointer-events-none absolute inset-0 px-1 pb-6 pt-7 sm:pb-8 animate-[asset-fade-out_280ms_ease-out_forwards]"
+            className="pointer-events-none absolute inset-0 flex items-center px-2 py-3 sm:block sm:py-0 sm:px-1 sm:pb-8 sm:pt-7 animate-[asset-fade-out_280ms_ease-out_forwards]"
             onAnimationEnd={() => setPrevType(null)}
           >
             <ShapeGrid
@@ -167,6 +168,7 @@ export function ChocolatePicker({ pending, onSelect }: ChocolatePickerProps) {
               pending={pending}
               onSelect={handleSelect}
               onDragStart={handleDragStart}
+              cellPx={PICK_GRID_PX}
             />
           </section>
         )}

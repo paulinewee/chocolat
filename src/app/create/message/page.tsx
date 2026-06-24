@@ -140,8 +140,8 @@ export default function AddMessagePage() {
  const hasAtLeastOneMessage = draft.messages.some(messageHasContent);
 
  return (
-  <main className="flex h-dvh max-h-dvh flex-col overflow-hidden">
-   <div className="safe-pad-x mx-auto flex h-full min-h-0 w-full max-w-[1400px] flex-1 flex-col overflow-hidden px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] md:px-8 md:py-6">
+  <main className="flex flex-col sm:h-dvh sm:max-h-dvh sm:overflow-hidden">
+   <div className="safe-pad-x mx-auto flex w-full max-w-[1400px] flex-col px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:h-full sm:min-h-0 sm:flex-1 sm:overflow-hidden md:px-8 md:py-6">
     <SiteHeader
      title={
       <>
@@ -158,10 +158,10 @@ export default function AddMessagePage() {
      }
     />
 
-    <div className="mt-2 grid min-h-0 flex-1 grid-cols-1 grid-rows-[minmax(0,0.9fr)_minmax(0,1.1fr)] gap-3 overflow-hidden sm:mt-4 sm:grid-rows-[minmax(0,1fr)_minmax(0,1fr)] lg:grid-cols-2 lg:grid-rows-1 lg:gap-8">
+    <div className="mt-2 grid grid-cols-1 grid-rows-[auto_auto] gap-1 sm:mt-4 sm:min-h-0 sm:flex-1 sm:grid-rows-[minmax(0,1fr)_minmax(0,1fr)] sm:gap-3 sm:overflow-hidden lg:grid-cols-2 lg:grid-rows-1 lg:gap-8">
      {hasChocolates ? (
       <>
-       <div className="relative z-20 flex min-h-0 items-center justify-center overflow-visible px-1">
+       <div className="relative z-20 flex h-[38dvh] items-center justify-center overflow-visible px-1 sm:h-auto sm:min-h-0">
         <MessageBox
          className="h-full"
          shape={draft.boxShape}
@@ -176,7 +176,7 @@ export default function AddMessagePage() {
          size={boxSize}
         />
        </div>
-       <div className="relative z-10 min-h-0 overflow-x-hidden overflow-y-auto overscroll-contain px-1 sm:px-6 lg:px-10">
+       <div className="relative z-10 px-1 sm:min-h-0 sm:overflow-x-hidden sm:overflow-y-auto sm:overscroll-contain sm:px-6 lg:px-10">
         {allCompleteNotice ? (
          <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-6">
           <p className="max-w-sm text-[13px] leading-relaxed tracking-[0.04em] text-muted sm:text-sm">

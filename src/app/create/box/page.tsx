@@ -51,33 +51,33 @@ function BoxShapeGrid({
   color: string;
   onSelect: (shape: BoxShape) => void;
 }) {
-  const topRow = BOX_SHAPES.slice(0, 3);
-  const bottomRow = BOX_SHAPES.slice(3);
+  const row1 = BOX_SHAPES.slice(0, 2);
+  const row2 = BOX_SHAPES.slice(2, 4);
+  const row3 = BOX_SHAPES.slice(4);
+
+  const rowClass = "grid w-full max-w-sm grid-cols-2 items-end gap-3 overflow-visible sm:max-w-lg sm:gap-8";
 
   return (
     <div className="flex w-full flex-col items-center gap-1 sm:gap-2 md:gap-3">
-      <div className="grid w-full max-w-3xl grid-cols-3 items-end gap-3 overflow-visible px-1 sm:gap-8 sm:px-0 md:max-w-4xl md:gap-12">
-        {topRow.map((box) => (
-          <BoxOption
-            key={box.id}
-            box={box}
-            selected={selected === box.id}
-            color={color}
-            onSelect={onSelect}
-          />
+      <div className={rowClass}>
+        {row1.map((box) => (
+          <BoxOption key={box.id} box={box} selected={selected === box.id} color={color} onSelect={onSelect} />
         ))}
       </div>
-      <div className="flex w-full max-w-lg items-end justify-center gap-6 sm:gap-12 md:max-w-2xl md:gap-20">
-        {bottomRow.map((box) => (
-          <BoxOption
-            key={box.id}
-            box={box}
-            selected={selected === box.id}
-            color={color}
-            onSelect={onSelect}
-          />
+      <div className={rowClass}>
+        {row2.map((box) => (
+          <BoxOption key={box.id} box={box} selected={selected === box.id} color={color} onSelect={onSelect} />
         ))}
       </div>
+      {row3.length > 0 && (
+        <div className="flex w-full max-w-sm items-end justify-center gap-3 overflow-visible sm:max-w-lg sm:gap-8">
+          {row3.map((box) => (
+            <div key={box.id} className="w-1/2">
+              <BoxOption box={box} selected={selected === box.id} color={color} onSelect={onSelect} />
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -106,7 +106,7 @@ export default function PickBoxPage() {
             type="button"
             onClick={() => setBoxColor(c.value)}
             aria-label={c.label}
-            className={`h-10 w-10 touch-manipulation rounded-full border-2 transition-[transform,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] sm:h-9 sm:w-9 md:h-7 md:w-7 ${
+            className={`h-7 w-7 touch-manipulation rounded-full border-2 transition-[transform,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] sm:h-7 sm:w-7 md:h-6 md:w-6 ${
               draft.boxColor === c.value
                 ? "scale-110 border-ink"
                 : "border-ink/20"

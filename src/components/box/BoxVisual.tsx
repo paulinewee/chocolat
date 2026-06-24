@@ -34,7 +34,7 @@ export const BOX_CHOCOLATE_PX: Record<BoxSize, number> = {
   md: 68,
   lg: 78,
   xl: 118,
-  fit: 118,
+  fit: 70,
 };
 
 /** Nudge slot contents downward (px) so chocolates sit in tray wells */
@@ -43,7 +43,7 @@ export const SLOT_NUDGE_Y_PX: Record<BoxSize, number> = {
   md: 10,
   lg: 12,
   xl: 15,
-  fit: 15,
+  fit: 10,
 };
 
 const SLOT_HIT_PX: Record<BoxSize, number> = {
@@ -51,7 +51,7 @@ const SLOT_HIT_PX: Record<BoxSize, number> = {
   md: 56,
   lg: 64,
   xl: 76,
-  fit: 76,
+  fit: 56,
 };
 
 /** Corner wells (esp. top-right) sit under the lid rim — use a larger drop target */

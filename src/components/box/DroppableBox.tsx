@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import type { BoxShape, PlacedChocolate } from "@/types";
 import { getChocolateDragData } from "@/lib/chocolate-drag";
 import type { PendingChocolate } from "@/components/chocolate/ChocolatePicker";
@@ -37,6 +37,28 @@ export function DroppableBox({
   pending,
   onPendingPlaced,
 }: DroppableBoxProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  // Start at a conservative 50px for "fit" so first paint isn't oversized.
+  // useLayoutEffect + ResizeObserver fires before paint and corrects it immediately.
+  const [fitChocPx, setFitChocPx] = useState<number>(size === "fit" ? 50 : BOX_CHOCOLATE_PX[size]);
+
+  useLayoutEffect(() => {
+    if (size !== "fit") return;
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      // "fit" box = aspect-square constrained by min(containerWidth-padding, containerHeight)
+      const boxSide = Math.min(width - 8, height);
+      // Match xl ratio (~17%) so chocolates look the same proportion at any size
+      setFitChocPx(Math.min(118, Math.max(40, Math.round(boxSide * 0.20))));
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [size]);
+
+  const chocPx = size === "fit" ? fitChocPx : BOX_CHOCOLATE_PX[size];
+
   const isFilled = useCallback(
     (slotIndex: number) => chocolates.some((c) => c.slotIndex === slotIndex),
     [chocolates],
@@ -81,7 +103,7 @@ export function DroppableBox({
     <div
       className={`flex h-full min-h-0 w-full flex-col items-center overflow-hidden ${className}`}
     >
-      <div className="flex min-h-0 w-full flex-1 items-center justify-center overflow-visible px-1">
+      <div ref={containerRef} className="flex min-h-0 w-full flex-1 items-center justify-center overflow-visible px-1">
         <BoxVisual
           shape={shape}
           color={color}
@@ -121,7 +143,7 @@ export function DroppableBox({
                   type={placed.type}
                   shapeId={placed.shapeId}
                   size="slot"
-                  pixelSize={BOX_CHOCOLATE_PX[size]}
+                  pixelSize={chocPx}
                 />
               </button>
             );

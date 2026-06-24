@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { BoxDraft, ChocolateMessage, PlacedChocolate } from "@/types";
 import { BOX_SPOT_COUNTS } from "@/types";
 import { messageHasContent } from "@/lib/message-utils";
@@ -58,7 +58,26 @@ export function ShareExperience({ box }: ShareExperienceProps) {
  const chocolatesRevealed = phase === "chocolates";
  const showCardOnBox = (phase === "card" || isComplete) && hasCard;
  const boxSize = useResponsiveBoxSize("xl");
- const chocPx = BOX_CHOCOLATE_PX[boxSize];
+ const boxContainerRef = useRef<HTMLDivElement>(null);
+ const [chocPx, setChocPx] = useState<number>(
+   boxSize === "fit" ? 50 : BOX_CHOCOLATE_PX[boxSize],
+ );
+
+ useLayoutEffect(() => {
+   if (boxSize !== "fit") {
+     setChocPx(BOX_CHOCOLATE_PX[boxSize]);
+     return;
+   }
+   const el = boxContainerRef.current;
+   if (!el) return;
+   const observer = new ResizeObserver(([entry]) => {
+     const { width, height } = entry.contentRect;
+     const boxSide = Math.min(width - 8, height > 0 ? height : width - 8);
+     setChocPx(Math.min(118, Math.max(40, Math.round(boxSide * 0.20))));
+   });
+   observer.observe(el);
+   return () => observer.disconnect();
+ }, [boxSize]);
 
  const getMessage = (slotIndex: number) =>
   box.messages.find((m) => m.slotIndex === slotIndex);
@@ -167,7 +186,7 @@ export function ShareExperience({ box }: ShareExperienceProps) {
 
    {/* Box — same size as original */}
    <div className="mt-6 w-full sm:mt-8">
-    <div className="relative mx-auto w-full max-w-[min(100%,680px)] overflow-visible px-1">
+    <div ref={boxContainerRef} className="relative mx-auto w-full max-w-[min(100%,680px)] overflow-visible px-1">
      <BoxVisual
       shape={box.boxShape}
       color={box.boxColor}

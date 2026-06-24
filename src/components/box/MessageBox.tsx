@@ -1,5 +1,6 @@
 "use client";
 
+import { useLayoutEffect, useRef, useState } from "react";
 import { messageHasContent } from "@/lib/message-utils";
 import type { BoxShape, ChocolateMessage, PlacedChocolate } from "@/types";
 import { ChocolatePiece } from "@/components/chocolate/ChocolatePiece";
@@ -40,11 +41,29 @@ export function MessageBox({
   const getMessage = (index: number) =>
     messages.find((m) => m.slotIndex === index);
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [fitChocPx, setFitChocPx] = useState<number>(size === "fit" ? 50 : BOX_CHOCOLATE_PX[size]);
+
+  useLayoutEffect(() => {
+    if (size !== "fit") return;
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      const boxSide = Math.min(width - 8, height);
+      setFitChocPx(Math.min(118, Math.max(40, Math.round(boxSide * 0.20))));
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [size]);
+
+  const chocPx = size === "fit" ? fitChocPx : BOX_CHOCOLATE_PX[size];
+
   return (
     <div
       className={`flex h-full min-h-0 w-full flex-col items-center overflow-x-hidden overflow-y-visible ${className}`}
     >
-      <div className="flex min-h-0 w-full flex-1 items-center justify-center overflow-visible px-1">
+      <div ref={containerRef} className="flex min-h-0 w-full flex-1 items-center justify-center overflow-visible px-1">
         <BoxVisual shape={shape} color={color} size={size} stacked className="mx-auto">
           <BoxSlotLayer shape={shape} size={size} spotCount={spotCount}>
             {(index) => {
@@ -102,7 +121,7 @@ export function MessageBox({
                     type={placed.type}
                     shapeId={placed.shapeId}
                     size="slot"
-                    pixelSize={BOX_CHOCOLATE_PX[size]}
+                    pixelSize={chocPx}
                     interactive
                     hasMessage={false}
                     onClick={() => onChocolateClick(index)}

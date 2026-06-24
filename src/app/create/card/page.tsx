@@ -69,7 +69,7 @@ export default function WriteCardPage() {
     </div>
 
     {/* Box image — large, sits below the card and naturally overflows the page */}
-    <div className="pointer-events-none absolute top-[10%] left-1/2 w-[min(160%,980px)] -translate-x-1/2">
+    <div className="pointer-events-none absolute top-[10%] left-1/2 w-[min(160%,980px)] -translate-x-1/2 hidden sm:block">
      <AssetImage
       key={ribbon1Src}
       src={cardBgSrc}

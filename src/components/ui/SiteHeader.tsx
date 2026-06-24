@@ -19,23 +19,23 @@ export function SiteHeader({
  className = "",
 }: SiteHeaderProps) {
  return (
-  <header className={`relative mb-3 pt-1 text-center sm:mb-4 sm:pt-2 md:mb-6 md:pt-3 ${className}`}>
-   {backHref && (
-    <div className="absolute left-0 top-1 sm:top-2 md:top-2.5">
-     <BackButton href={backHref} />
+  <header className={`mb-3 sm:mb-4 md:mb-6 ${className}`}>
+   <div className="flex items-center gap-2">
+    <div className="flex w-11 shrink-0 justify-start">
+     {backHref && <BackButton href={backHref} />}
     </div>
-   )}
 
-   {navEnd && (
-    <div className="absolute right-0 top-1 sm:top-2 md:top-2.5">{navEnd}</div>
-   )}
+    <h1 className="min-w-0 flex-1 whitespace-nowrap text-center text-[18px] leading-tight tracking-tight sm:whitespace-normal sm:text-[22px] md:text-[26px] lg:text-[30px]">
+     {title}
+    </h1>
 
-   <h1 className="mx-auto max-w-[min(100%,14rem)] px-[4.75rem] text-[18px] leading-tight tracking-tight sm:max-w-none sm:px-20 sm:text-[22px] md:text-[26px] lg:text-[30px]">
-    {title}
-   </h1>
+    <div className="flex w-11 shrink-0 justify-end">
+     {navEnd}
+    </div>
+   </div>
 
    {hint && (
-    <p className="mt-3 font-mono text-[10px] tracking-[0.18em] text-muted sm:mt-4 sm:text-xs sm:tracking-[0.2em]">
+    <p className="mt-3 hidden font-mono text-[10px] tracking-[0.18em] text-muted sm:mt-4 sm:block sm:text-xs sm:tracking-[0.2em]">
      {hint}
     </p>
    )}

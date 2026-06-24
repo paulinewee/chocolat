@@ -119,7 +119,7 @@ export function MessageSidePanel({
    </div>
 
    {/* Card — splits into two columns when an embed is present */}
-   <div className="origin-top-left rotate-[-1deg] border-2 border-black bg-white/65">
+   <div className="origin-top-left rotate-[-1deg] border border-ink/30 bg-white/65">
     <div className={`flex ${mapUrl || spotifyUrl || imageUrl ? "flex-row" : "flex-col"}`}>
 
      {/* ── Left column: text + controls ── */}
